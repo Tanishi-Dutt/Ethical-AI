@@ -54,3 +54,23 @@
     </script>
 </body>
 </html>
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+// Client-side JavaScript
+const socket = io('http://localhost:5000');
+
+socket.on('connect', () => {
+    console.log('Connected to real-time monitoring service');
+});
+
+socket.on('alert', (data) => {
+    alert(data.message); // Display real-time alerts to the user
+});
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
