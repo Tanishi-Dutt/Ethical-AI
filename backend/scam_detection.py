@@ -38,13 +38,18 @@ import nltk
 # Download required NLTK data files (if not already done)
 nltk.download('punkt')
 
-# Sample list of scam-related phrases (extend as needed)
+# Sample list of scam-related phrases 
 scam_phrases = [
     "urgent action required",
     "claim your prize",
-    "you have won",
+    "Congraulations!you have won",
     "confirm your personal information",
     "limited time offer"
+    "HsBc"
+    "messageS"
+    "Click to unlock"
+    "
+    
 ]
 
 def transcribe_audio(file_path):
