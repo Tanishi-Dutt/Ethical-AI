@@ -83,14 +83,4 @@ Folder Structure
 ├── README.md                         # Project documentation
 └── requirements.txt                  # List of dependencies
 
-/project-root
-│-- /backend
-│   │-- app.py             # Main Flask server
-│   │-- threat_detection.py # Threat and encryption logic
-│   │-- user_management.py  # User management logic
-│   │-- database.py         # SQLite setup and interaction
-│-- /frontend
-│   │-- index.html          # HTML for real-time monitoring
-│   │-- script.js           # JavaScript for client-side operations
-│-- requirements.txt        # List of Python dependencies
-│-- run.py                  # Start the whole app
+
