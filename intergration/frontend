@@ -1,0 +1,14 @@
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<script>
+    const socket = io('http://localhost:5000');
+
+    socket.on('alert', (data) => {
+        alert(`Alert: ${data.message}`);
+    });
+
+    function simulateTransaction() {
+        fetch('http://localhost:5000/transaction', { /*...*/ })
+        .then(response => response.json())
+        .then(data => alert(`Transaction Status: ${data.status}`));
+    }
+</script>
