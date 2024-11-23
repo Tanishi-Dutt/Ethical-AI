@@ -1,0 +1,21 @@
+import re
+import requests
+
+# Example malicious URL patterns
+malicious_patterns = [r'\bexample-malware\.com\b', r'\bphishy-site\b']
+
+def scan_url(url):
+    # Check if the URL matches any known malicious patterns
+    for pattern in malicious_patterns:
+        if re.search(pattern, url):
+            return f"Warning: {url} is potentially malicious!"
+    
+    # Basic check against a public safe browsing API (pseudo-code)
+    # response = requests.get(f'https://safe-browsing-api.example/{url}')
+    # if response.json().get('status') == 'malicious':
+    #     return f"Warning: {url} is flagged as malicious!"
+
+    return f"{url} is safe."
+
+# Example usage:
+# print(scan_url("http://example-malware.com"))
