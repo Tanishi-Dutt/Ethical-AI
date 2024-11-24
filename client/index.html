@@ -1,1 +1,193 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Threat Monitoring Dashboard</title>
+
+    <!-- Link to the external CSS file using Flask's url_for -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Socket.io script for real-time communication -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+</head>
+<body>
+    <h1>Real-Time Threat Monitoring Dashboard</h1>
+
+    <!-- Interface Toggle Button -->
+    <button onclick="toggleInterface(this)">Switch to Elderly-Friendly Interface</button>
+
+    <!-- Normal Interface -->
+    <div class="normal" id="normalInterface">
+        <div id="alerts"></div>
+        
+        <h2>Check a URL</h2>
+        <input type="text" id="urlInput" placeholder="Enter URL">
+        <button onclick="checkURL()">Scan URL</button>
+        <p id="urlResult"></p>
+
+        <!-- User Registration Form -->
+        <h2>Register User</h2>
+        <form id="registerForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Register</button>
+        </form>
+
+        <!-- User Login Form -->
+        <h2>Login User</h2>
+        <form id="loginForm">
+            <input type="text" id="loginUsername" placeholder="Username" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+
+        <!-- Real-Time Monitoring Section -->
+        <h2>Real-Time Monitoring</h2>
+        <button onclick="simulateTransaction()">Simulate Transaction</button>
+        <button onclick="simulateCommunication('call')">Simulate Call</button>
+        <button onclick="simulateCommunication('message')">Simulate Message</button>
+        <button onclick="simulateCommunication('email')">Simulate Email</button>
+    </div>
+
+    <!-- Elderly-Friendly Interface -->
+    <div class="elderly-friendly" id="elderlyInterface">
+        <h1>Welcome!</h1>
+        <div class="button-wrapper">
+            <button onclick="showAlert()" style="background-color: red; color: white;" aria-label="Show scam alert">
+                Show Scam Alert
+            </button>
+            <button onclick="callEmergencyContact()" style="background-color: blue; color: white;" aria-label="Call emergency contact">
+                Emergency Contact
+            </button>
+            <!-- Fixed 'Home' Button -->
+            <button onclick="goHome()" style="background-color: green; color: white;" aria-label="Go to home">
+                Home
+            </button>
+            <button style="background-color: purple; color: white;" aria-label="Go to settings">
+                Settings
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const socket = io('http://127.0.0.1:5000');  // Connect to the backend
+
+        // Handle incoming alerts
+        socket.on('alert', (data) => {
+            const alertDiv = document.getElementById('alerts');
+            const newAlert = document.createElement('p');
+            newAlert.textContent = data.message;
+            alertDiv.appendChild(newAlert);
+        });
+
+        // Interface toggle function
+        function toggleInterface(button) {
+            const normalInterface = document.getElementById("normalInterface");
+            const elderlyInterface = document.getElementById("elderlyInterface");
+            if (normalInterface.style.display === "none") {
+                normalInterface.style.display = "block";
+                elderlyInterface.style.display = "none";
+                button.innerText = "Switch to Elderly-Friendly Interface";
+            } else {
+                normalInterface.style.display = "none";
+                elderlyInterface.style.display = "block";
+                button.innerText = "Switch to Normal Interface";
+            }
+        }
+
+        // User registration form handling
+        document.getElementById('registerForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+            alert(data.message);
+        };
+
+        // User login form handling
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+            alert(data.message);
+        };
+
+        // URL Threat Detection Function
+        function checkURL() {
+            const url = document.getElementById("urlInput").value;
+            document.getElementById("urlResult").innerText = "Scanning URL...";
+            fetch('/scan_url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("urlResult").innerText = `URL Status: ${data.status}`;
+            });
+        }
+
+        // Real-Time Monitoring Functions
+        socket.on('connect', () => {
+            console.log('Connected to real-time monitoring service');
+        });
+
+        function simulateTransaction() {
+            fetch('/transaction', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: 'user123',
+                    amount: Math.floor(Math.random() * 10000)
+                })
+            })
+            .then(response => response.json())
+            .then(data => alert(`Transaction Status: ${data.status}`));
+        }
+
+        function simulateCommunication(type) {
+            fetch('/communication', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: type,
+                    identifier: type === 'email' ? 'test@example.com' : '+1234567890'
+                })
+            })
+            .then(response => response.json())
+            .then(data => alert(`Communication Status: ${data.status}`));
+        }
+
+        // Elderly-Friendly Interface Functions
+        function showAlert() {
+            alert("Warning: This may be a scam. Proceed with caution!");
+        }
+
+        function callEmergencyContact() {
+            alert("Calling your trusted contact...");
+        }
+
+        // Fix for "Home" Button
+        function goHome() {
+            window.location.href = "/";  // Redirect back to the main dashboard or home page
+        }
+    </script>
+</body>
+</html>
