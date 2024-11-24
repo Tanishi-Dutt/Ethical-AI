@@ -1,10 +1,25 @@
+
 import requests
+import re
+import nltk
 
-def check_url(url):
-    # Google Safe Browsing API URL
-    api_url = "https://safebrowsing.googleapis.com/v4/threatMatches:find?AIzaSyCpr3J7Q2cEWRatpnUvipgzmSid5CTw38o"
+# Sample list of scam-related phrases to detect in the text
+scam_phrases = [
+    "urgent action required",
+    "claim your prize",
+    "Congratulations! you have won",  # Fixed spelling
+    "confirm your personal information",
+    "limited time offer",
+    "HSbC",  # Fixed case
+    "messageS",  # Consider replacing with "messages" for correctness
+    "Click to unlock"
+]
 
-    # Payload structure for the Safe Browsing API
+# Function to check URLs with Google Safe Browsing API (using your own API key)
+def check_url_v2(url):
+    """Check if a URL is safe using Google Safe Browsing API."""
+    api_url = "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=YOUR_API_KEY"
+    
     payload = {
         "client": {"clientId": "your-app", "clientVersion": "1.0"},
         "threatInfo": {
@@ -16,95 +31,39 @@ def check_url(url):
     }
 
     headers = {"Content-Type": "application/json"}
-
-    # Send POST request to Google Safe Browsing API with the payload and headers
+    
     response = requests.post(api_url, json=payload, headers=headers)
-
-    # Parse the JSON response
     result = response.json()
 
-    # Check if the result contains any threats
     if "matches" in result:
         return {"status": "dangerous", "details": result["matches"]}
     else:
         return {"status": "safe", "details": None}
 
-
-!pip install SpeechRecognition
-import speech_recognition as sr
-import re
-import nltk
-
-# Download required NLTK data files (if not already done)
-nltk.download('punkt')
-
-# Sample list of scam-related phrases 
-scam_phrases = [
-    "urgent action required",
-    "claim your prize",
-    "Congraulations!you have won",
-    "confirm your personal information",
-    "limited time offer"
-    "HsBc"
-    "messageS"
-    "Click to unlock"
-    "
-    
-]
-
-def transcribe_audio(file_path):
-    recognizer = sr.Recognizer()
-    with sr.AudioFile(file_path) as source:
-        audio = recognizer.record(source)
-    try:
-        return recognizer.recognize_google(audio)
-    except sr.UnknownValueError:
-        return None
-    except sr.RequestError as e:
-        print(f"Could not request results from Google Speech Recognition service; {e}")
-        return None
-
-def detect_scam_phrases(text):
+# Function to detect scam-related phrases in the given text
+def detect_scam_phrases_v2(text):
+    """Detect scam-related phrases in the given text."""
     found_phrases = []
     for phrase in scam_phrases:
         if re.search(r"\b" + re.escape(phrase) + r"\b", text, re.IGNORECASE):
             found_phrases.append(phrase)
     return found_phrases
 
-# Putting it together
-file_path = "path_to_audio_file.wav"  # Replace with the actual audio file path, ask client to put the voice file in
-transcribed_text = transcribe_audio(file_path)
-
-if transcribed_text:
-    detected_phrases = detect_scam_phrases(transcribed_text)
-    if detected_phrases:
-        print("Scam-related phrases detected:", detected_phrases)
-    else:
-        print("No scam-related phrases detected.")
-else:
-    print("Could not transcribe audio.")
-
-
-!pip install scikit-learn pandas
-import pandas as pd
-from sklearn.ensemble import IsolationForest
-
-# Example dataset
-data = {
-    "user_id": [1, 2, 1, 3, 1, 2, 3, 1, 2, 3],
-    "transaction_amount": [200, 5000, 300, 7000, 250, 50, 10000, 90, 40, 60],
-    "transaction_frequency": [3, 15, 7, 12, 2, 3, 18, 2, 1, 3]
-}
-df = pd.DataFrame(data)
-
-# Features for fraud detection
-X = df[["transaction_amount", "transaction_frequency"]]
-
-# Initialize Isolation Forest model
-model = IsolationForest(n_estimators=100, contamination=0.1, random_state=42)
-df["fraud_flag"] = model.fit_predict(X)
-
-# -1 indicates anomaly (potential fraud), 1 indicates normal behaviour
-fraud_cases = df[df["fraud_flag"] == -1]
-print("Detected potential fraud cases:\n", fraud_cases)
-
+# Optionally, you can have a function to test all functionality at once
+def check_scam_activity(url, text):
+    """
+    Combines URL safety check and scam phrase detection
+    Returns both results for comprehensive scanning.
+    """
+    # Check the URL using Google Safe Browsing API
+    url_result = check_url_v2(url)
+    
+    # Detect scam phrases in the text
+    scam_result = detect_scam_phrases_v2(text)
+    
+    # Combine both results and return
+    combined_result = {
+        "url_check": url_result,
+        "scam_phrases": scam_result
+    }
+    return combined_result
