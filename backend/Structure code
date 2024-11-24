@@ -1,1 +1,15 @@
 
+/project-root
+│
+├── backend
+│   ├── app.py                        # Main application file
+│   ├── config.py                     # App configuration
+│   ├── encryption.py                 # Encryption functionalities by Rayyana
+│   ├── scam_detection.py             # Scam detection by Theodora
+│   ├── real_time_monitoring.py       # Monitoring and alerting by Tanishi
+│   ├── user_management.py            # User registration and login
+│   ├── secure_communication.py       # Secure messaging by Shiven
+│   └── alert_system.py               # Threat alert functionalities
+│
+├── client
+│   ├── index.html                    # Main HTML for UI
